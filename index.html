@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Harmonic Lab — Serie arm&oacute;nica y ondas estacionarias</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>Harmonic Lab</h1>
+    <p class="subtitle">Explora la serie arm&oacute;nica y las ondas estacionarias con sonido chiptune</p>
+  </header>
+
+  <main>
+    <!-- ===== Panel izquierdo: controles + divulgaci&oacute;n ===== -->
+    <aside class="panel-controls">
+
+      <!-- Controles de audio -->
+      <section class="control-group">
+        <h2>Controles</h2>
+
+        <label>
+          Frecuencia fundamental (Hz)
+          <div class="slider-row">
+            <input type="range" id="freqSlider" min="110" max="880" step="1" value="440">
+            <span id="freqValue">440</span>
+          </div>
+        </label>
+
+        <label>
+          Arm&oacute;nico n
+          <div class="slider-row">
+            <input type="range" id="harmonicSlider" min="1" max="16" step="1" value="1">
+            <span id="harmonicValue">1</span>
+          </div>
+        </label>
+
+        <label>
+          Duty (chiptune)
+          <select id="dutySelect">
+            <option value="0.125">12.5 %</option>
+            <option value="0.25">25 %</option>
+            <option value="0.5" selected>50 %</option>
+            <option value="0.75">75 %</option>
+          </select>
+        </label>
+
+        <label>
+          Mezcla (fundamental &harr; arm&oacute;nico)
+          <div class="slider-row">
+            <input type="range" id="mixSlider" min="0" max="100" step="1" value="50">
+            <span id="mixValue">50</span>
+          </div>
+        </label>
+
+        <div class="button-row">
+          <button id="audioOnBtn">Audio ON</button>
+          <button id="playBtn" disabled>Play</button>
+          <button id="autoBtn" disabled>Auto</button>
+        </div>
+
+        <div class="checkbox-row">
+          <label><input type="checkbox" id="vibratoCheck"> Vibrato</label>
+          <label><input type="checkbox" id="bitcrushCheck"> Bitcrush</label>
+        </div>
+
+        <label id="bitcrushIntensityLabel" class="hidden">
+          Bitcrush intensidad
+          <div class="slider-row">
+            <input type="range" id="bitcrushSlider" min="1" max="32" step="1" value="8">
+            <span id="bitcrushValue">8</span>
+          </div>
+        </label>
+      </section>
+
+      <!-- Tarjetas de divulgaci&oacute;n -->
+      <section class="info-card">
+        <h3>&iquest;Qu&eacute; es un arm&oacute;nico?</h3>
+        <p>Cuando una cuerda vibra, no solo produce su frecuencia fundamental: tambi&eacute;n genera m&uacute;ltiplos enteros de esa frecuencia llamados <strong>arm&oacute;nicos</strong>. El segundo arm&oacute;nico vibra al doble, el tercero al triple, y as&iacute; sucesivamente. La combinaci&oacute;n de todos estos arm&oacute;nicos define el <em>timbre</em> &mdash;la raz&oacute;n por la que una guitarra y una flauta suenan distinto tocando la misma nota.</p>
+      </section>
+
+      <section class="info-card">
+        <h3>Por qu&eacute; cambia el timbre</h3>
+        <p>Cada instrumento enfatiza arm&oacute;nicos diferentes. Un sonido &ldquo;cuadrado&rdquo; (como el de una Game Boy) contiene solo arm&oacute;nicos impares, lo que le da ese car&aacute;cter metálico. Al modificar el <strong>duty cycle</strong> &mdash;la proporci&oacute;n de la onda que est&aacute; &ldquo;arriba&rdquo;&mdash; cambiamos qu&eacute; arm&oacute;nicos est&aacute;n presentes y el sonido se vuelve m&aacute;s nasal o hueco.</p>
+      </section>
+
+      <section class="info-card">
+        <h3>C&oacute;mo leer el dibujo</h3>
+        <p>La curva muestra una <strong>onda estacionaria</strong>: los puntos que nunca se mueven son los <em>nodos</em> (c&iacute;rculos peque&ntilde;os), y las zonas de m&aacute;xima vibraci&oacute;n son los <em>antinodos</em>. Cuanto mayor es el n&uacute;mero del arm&oacute;nico, m&aacute;s nodos aparecen entre los extremos fijos.</p>
+      </section>
+
+      <!-- Placeholder: aqu&iacute; ir&iacute;a el futuro panel WebMIDI
+           - Selector de dispositivo MIDI
+           - Bot&oacute;n Connect
+           - Controles para enviar NoteOn/Off y Pitch Bend
+           Ver midiState en app.js para la arquitectura preparada.
+      -->
+    </aside>
+
+    <!-- ===== Panel derecho: visualizaci&oacute;n ===== -->
+    <section class="panel-visual">
+      <h2>Onda estacionaria</h2>
+      <svg id="waveSvg" viewBox="0 0 800 220" preserveAspectRatio="xMidYMid meet">
+        <!-- L&iacute;nea central -->
+        <line x1="0" y1="110" x2="800" y2="110" class="center-line"/>
+        <!-- Curva principal -->
+        <path id="wavePath" d="" class="wave-path"/>
+        <!-- Nodos se a&ntilde;aden din&aacute;micamente -->
+        <g id="nodesGroup"></g>
+      </svg>
+      <p class="formula">y(x, t) = sin(n &middot; &pi; &middot; x) &middot; sin(&omega; &middot; t)</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>Harmonic Lab &mdash; Hecho con Web Audio API y SVG. Sin librer&iacute;as externas.</p>
+  </footer>
+
+  <!-- Para publicar en GitHub Pages:
+       1. Crea un repositorio en GitHub.
+       2. Sube index.html, style.css y app.js a la rama main.
+       3. Ve a Settings > Pages > Source: Deploy from a branch > main / root.
+       4. Tu web estar&aacute; en https://<usuario>.github.io/<repo>/
+  -->
+  <script src="app.js"></script>
+</body>
+</html>
